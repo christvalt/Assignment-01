@@ -1,4 +1,4 @@
-package pcd.lab03.monitors.barrier;
+package concurent;
 
 /*
  * Barrier - to be implemented

@@ -1,4 +1,4 @@
-/*
+package concurent;/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -33,6 +33,8 @@ import java.util.List;
  * @author Tilman Hausherr
  */
 public class ExtractTextSimple {
+    private static String ExtractedText = "";
+    //private String ExtractedText = "";
 
     public ExtractTextSimple() {
 
@@ -58,7 +60,7 @@ public class ExtractTextSimple {
                     throw new IOException("You do not have permission to extract text");
                 }
                 PDFTextStripper stripper = new PDFTextStripper();
-                String ExtractedText = "";
+            // String ExtractedText = "";
                 stripper.setSortByPosition(true);
                 for (int p = 1; p <= document.getNumberOfPages(); ++p) {
                     // Set the page interval to extract. If you don't, then all pages would be extracted.
@@ -76,5 +78,9 @@ public class ExtractTextSimple {
         System.out.println("my size is "+ AllTheText.size());
 
 
+    }
+
+    public String getExtractedText() {
+        return ExtractedText;
     }
 }

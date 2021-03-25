@@ -1,3 +1,7 @@
+package concurent;
+
+import concurent.ExtractTextSimple;
+
 import java.util.ArrayList;
 
 public class Master extends Thread{

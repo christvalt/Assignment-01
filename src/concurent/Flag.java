@@ -1,3 +1,5 @@
+package concurent;
+
 public class Flag {
 
     private boolean isSet;

@@ -1,3 +1,5 @@
+package concurent;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,14 +29,9 @@ public class LauncherNoGui
         ExtractTextSimple extractTextSimple = new ExtractTextSimple();
         extractTextSimple.textExtractor();
         WordCount wordCount = new WordCount();
-        List<String> words = new ArrayList<String>();
-        words.add("d");
-        words.add("r");
-        words.add("r");
-        words.add("t");
-        words.add("w");
-        words.add("t");
-        System.out.println(wordCount.counting(words));
+       String words = new String("faccio lezione sta  io an io");
+
+        System.out.println(wordCount.computeWord(words));
     }
 }
 
