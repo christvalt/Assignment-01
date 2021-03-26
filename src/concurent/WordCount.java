@@ -10,26 +10,30 @@ public class WordCount extends Thread{
 
     private Barrier barrier;
     private Flag stopFlag;
+    Map<String, Integer> wordCuntener = new HashMap<String, Integer>();
 
 
 
-    public WordCount(final int  words, ArrayList<ExtractTextSimple> extracted,Flag stopFlag ){
+    public WordCount(/*final int  words,*/ ArrayList<ExtractTextSimple> extracted, Flag stopFlag ){
         this.extracted =extracted;
-        this.Words= words;
+       // this.Words= words;
         this.stopFlag = stopFlag;
         this.barrier = barrier;
 
     }
-    public  Map<String, Integer> computeWord(String word) {
-        Map<String, Integer> wordCounter = new HashMap<String, Integer>();
-            if (!wordCounter.containsKey(word)) {  // first time we've seen this string
-                wordCounter.put(word, 1);//add the word
+    public void computeWord(String word) {
+        ///Map<String, Integer> wordCounter = new HashMap<String, Integer>();
+            if (!wordCuntener.containsKey(word)) {  // first time we've seen this string
+                wordCuntener.put(word, 1);//add the word
             }
             else {
-                int count = wordCounter.get(word);
-                wordCounter.put(word, count + 1);//updating the cont of word
+                int count = wordCuntener.get(word);
+                wordCuntener.put(word, count + 1);//updating the cont of word
             }
-        return wordCounter;
+    }
+    public Map<String, Integer> getWordCuntener() {
+        Map<String, Integer> e = new HashMap<String, Integer>();
+        return wordCuntener;
     }
 
     public void run() {
@@ -46,15 +50,16 @@ public class WordCount extends Thread{
                     computeWord(String.valueOf(extracted));
                     words++;
                 }
+                //int numWords + = extracted.size() ;
+                log(" after counting we have "+extracted.size()+"found"+words);
+                log("waiting to update the wordcounted");
 
-                int numWords = extracted.size() ;
-                int  wordfound = 0;
-                log("counting"+numWords+"found"+wordfound);
-                log("ready to update the wordcounted");
                 //readyToUpdateWordCounted.await();
-                /**
-                 code for update the wordcounted in the data structure
-                 */
+                barrier.hitAndWaitAll();
+                //code for update the wordcounted in the data structure
+                updateCount(words);
+
+
                 log("data structure updated");
                 //readyToDisplay.await();
 
@@ -66,6 +71,11 @@ public class WordCount extends Thread{
 
         }
     }
+
+    private void updateCount(int words) {
+
+    }
+
     private void log(String msg) {
         // System.out.println("[COLLISION CHECKER " + Thread.currentThread().getName() +"] " + msg);
         synchronized(System.out) {
