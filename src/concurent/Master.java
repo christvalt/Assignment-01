@@ -1,4 +1,5 @@
 package concurent;
+import concurent.WordCount;
 
 import concurent.ExtractTextSimple;
 
@@ -24,6 +25,9 @@ public class Master extends Thread{
         int extratTexrSimple=nWorkers;
 
 
+    }
+    public void update(wordCuntener countener){
+        update((countener.getWordCuntener()));
     }
 
 }

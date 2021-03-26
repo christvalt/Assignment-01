@@ -32,7 +32,6 @@ public class WordCount extends Thread{
             }
     }
     public Map<String, Integer> getWordCuntener() {
-        Map<String, Integer> e = new HashMap<String, Integer>();
         return wordCuntener;
     }
 
@@ -57,23 +56,22 @@ public class WordCount extends Thread{
                 //readyToUpdateWordCounted.await();
                 barrier.hitAndWaitAll();
                 //code for update the wordcounted in the data structure
-                updateCount(words);
+                synchronized (wordCuntener){
+                    updateCount(wordCuntener);
 
-
+                }
                 log("data structure updated");
                 //readyToDisplay.await();
-
-
+                barrier.hitAndWaitAll();
             }
-
-
         }catch(Exception ex){
 
         }
     }
 
-    private void updateCount(int words) {
+    private Map<String, Integer> updateCount(Map<String, Integer> wordCuntener) {
 
+        return this.wordCuntener;
     }
 
     private void log(String msg) {
