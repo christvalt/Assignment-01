@@ -1,4 +1,9 @@
-package concurent;
+package concurent.view;
+
+import concurent.Model.CounterAgent;
+import concurent.Model.ExtractText;
+import concurent.Model.Master;
+import concurent.Model.TaskCompletionLatch;
 
 import java.io.File;
 import java.io.IOException;

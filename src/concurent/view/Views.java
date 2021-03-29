@@ -1,4 +1,4 @@
-package concurent;
+package concurent.view;
 
 public class Views {
 }

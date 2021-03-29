@@ -1,14 +1,14 @@
-package concurent;
+package concurent.Model;
 
 import java.util.ArrayList;
 
 public class Master extends Thread{
 
     private int nWorkers;
-    //private Flag stopFlag;
+    //private concurent.controller.Flag stopFlag;
    // private View view;
     private WordCount wordCount;
-    private  TaskCompletionLatch synch;
+    private TaskCompletionLatch synch;
     private CountAndExtracView view;
 
     private ArrayList<CounterAgent> counterAgent;

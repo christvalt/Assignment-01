@@ -1,6 +1,7 @@
-package concurent;
+package concurent.Model;
 
-import java.util.ArrayList;
+import concurent.Barrier;
+
 import java.util.List;
 import java.util.Optional;
 

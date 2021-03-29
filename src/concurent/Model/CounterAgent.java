@@ -1,4 +1,4 @@
-package concurent;
+package concurent.Model;
 
 import java.util.*;
 
@@ -6,12 +6,12 @@ import java.util.*;
 public class CounterAgent extends Thread{
     private final ExtractText extractText;
    // private Barrier barrier;
-    private  TaskCompletionLatch synch;
-   // private Flag stopFlag;
+    private TaskCompletionLatch synch;
+   // private concurent.controller.Flag stopFlag;
     private WordCount wordCount;
 
 
-    public CounterAgent(final ExtractText extractText ,WordCount wordCount /*Barrier barrier ,Flag stopFlag*/,TaskCompletionLatch synch){
+    public CounterAgent(final ExtractText extractText ,WordCount wordCount /*Barrier barrier ,concurent.controller.Flag stopFlag*/,TaskCompletionLatch synch){
         this.extractText =extractText;
         this.wordCount =wordCount;
         this.synch=synch;
@@ -30,13 +30,13 @@ public class CounterAgent extends Thread{
                 //barrier.hitAndWaitAll();
                 int numWords = 0;
                 ArrayList<String> ListOfWord = (ArrayList<String>) allWords.get();
-                synchronized (allWords){
+                synchronized (ListOfWord){
                     for (String w : ListOfWord) {
                         wordCount.computeWord(String.valueOf(w));
                     }
                      numWords += ListOfWord.size() ;
                 }
-                log(" after counting we have "+ListOfWord.size()+"found"+numWords);
+                log(" after counting we have new words : "+ListOfWord.size()+"total words now :"+numWords);
                 log("waiting to update the wordcounted");
                 //barrier.hitAndWaitAll();
                 synchronized (wordCount){

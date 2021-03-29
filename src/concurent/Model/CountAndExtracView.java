@@ -1,4 +1,6 @@
-package concurent;
+package concurent.Model;
+
+import concurent.view.InterfaceFrame;
 
 public class CountAndExtracView {
 

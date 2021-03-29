@@ -1,4 +1,4 @@
-package concurent;
+package concurent.Model;
 
 public class TaskCompletionLatch {
 
@@ -6,7 +6,7 @@ public class TaskCompletionLatch {
 	private boolean stopped;
 	private int nCompletionsNotified;
 	
-	TaskCompletionLatch(int nWorkers){
+	public TaskCompletionLatch(int nWorkers){
 		this.nWorkers = nWorkers;
 		nCompletionsNotified = 0;
 		stopped = false;

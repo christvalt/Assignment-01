@@ -1,3 +1,5 @@
+package concurent.controller;
+
 public class Flag {
 
     private boolean isSet;

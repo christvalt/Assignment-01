@@ -1,11 +1,11 @@
-package concurent;
+package concurent.Model;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class WordCount {
     Map<String, Integer> wordCuntener = new HashMap<String, Integer>();
+    private int nWords;
 
     public void computeWord(String word) {
         ///Map<String, Integer> wordCounter = new HashMap<String, Integer>();
@@ -25,7 +25,10 @@ public class WordCount {
 
 
             //verifier apres........................................
-    public Map<String, Integer> updatedCount(WordCount wordCuntener) {
+    public Map<String, Integer> updatedCount( int nWordCount, WordCount wordCuntener) {
+
+        Map<String,Integer>  finalMap = new HashMap<String,Integer>();
+            nWords  += nWordCount;
 
         return this.wordCuntener;
     }

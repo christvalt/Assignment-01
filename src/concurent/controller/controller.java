@@ -1,4 +1,6 @@
-package concurent;
+package concurent.controller;
+
+import concurent.Model.*;
 
 import java.util.ArrayList;
 
@@ -7,7 +9,7 @@ public class controller {
     private ArrayList<CounterAgent> counterAgent;
     private ExtractText extractText;
     private CountAndExtracView view;
-    private  TaskCompletionLatch synch;
+    private TaskCompletionLatch synch;
 
     public controller(ArrayList<CounterAgent> counterAgent,CountAndExtracView view,TaskCompletionLatch synch){
         this.counterAgent =counterAgent;
