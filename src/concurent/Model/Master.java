@@ -1,42 +1,60 @@
 package concurent.Model;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class Master extends Thread{
 
+    private File DIRECTORY;
     private int nWorkers;
     //private concurent.controller.Flag stopFlag;
    // private View view;
-    private WordCount wordCount;
+    private InitialWordCounter wordCount;
     private TaskCompletionLatch synch;
     private CountAndExtracView view;
+    private final List<String> wordsToIgnore;
+    //private final int outputWords;
+    //private final ExtractAgent extractAgent;
 
     private ArrayList<CounterAgent> counterAgent;
-    private final ExtractText extractText;
+    private final ExtractAgent extractAgent;
 
 
-    public Master(int nWorkers, ExtractText extractText , ArrayList<CounterAgent> counterAgent,CountAndExtracView view,TaskCompletionLatch synch){
+    public Master(final String ignored ,final String directoryPath, TaskCompletionLatch synch) throws IOException {
         this.nWorkers=nWorkers;
-        this.extractText =extractText;
+        this. wordsToIgnore = Files.readAllLines(new File(ignored).toPath());
+        this.extractAgent = new ExtractAgent(new ExtractText(DIRECTORY, this.wordsToIgnore));
         this.counterAgent=counterAgent;
         //this.stopFlag =stopFlag;
        // this.view=view;
-        this.synch=synch;
+            this.synch=synch;
+
+        //this.outputWords = wordsNumber;
     }
 
     public void run(){
-        boolean stopped = false;
-        //nWorkers = Runtime.getRuntime().availableProcessors() + 1;
+       // boolean stopped = false;
         int nCounterAgent = nWorkers;
-        for (int i = 0; i < nWorkers ; i++){
-            CounterAgent worker = new CounterAgent(extractText,wordCount,synch);
+
+        counterAgent = new ArrayList<CounterAgent>();
+        for (int i = 0; i < nCounterAgent ; i++){
+            CounterAgent worker = new CounterAgent( this.extractAgent,wordCount,synch);
+            counterAgent.add(worker);
             worker.start();
         }
-        CounterAgent worker = new CounterAgent(extractText,wordCount,synch);
+        CounterAgent worker = new CounterAgent( this.extractAgent,wordCount,synch);
         worker.start();
-        /* main loop */
+        /* main loop
+        System.out.println("error mater 1");
+
         log("wait completion");
         try {
+            System.out.println("test  mater 1");
             synch.waitCompletion();
             log("completion arrived");
             view.update(wordCount);
@@ -45,6 +63,7 @@ public class Master extends Thread{
             log("interrupted");
             view.changeState("Interrupted");
         }
+        System.out.println("test 3");*/
 
     }
 

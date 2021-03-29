@@ -4,59 +4,63 @@ import java.util.*;
 
 
 public class CounterAgent extends Thread{
-    private final ExtractText extractText;
-   // private Barrier barrier;
+    private final ExtractAgent extractAgent;
     private TaskCompletionLatch synch;
-   // private concurent.controller.Flag stopFlag;
-    private WordCount wordCount;
+    private InitialWordCounter wordCount;
 
 
-    public CounterAgent(final ExtractText extractText ,WordCount wordCount /*Barrier barrier ,concurent.controller.Flag stopFlag*/,TaskCompletionLatch synch){
-        this.extractText =extractText;
-        this.wordCount =wordCount;
+    public CounterAgent(final ExtractAgent extractAgent , InitialWordCounter wordCount /*Barrier barrier ,concurent.controller.Flag stopFlag*/, TaskCompletionLatch synch){
+        this.extractAgent =extractAgent;
+        this.wordCount =new InitialWordCounter();
         this.synch=synch;
-       // this.barrier = barrier;
-        //this.stopFlag = stopFlag;
     }
 
     public  void run() {
         boolean stopped = false;
-        try{
-           // ArrayList<ExtractAgent>  = new ArrayList<ExtractAgent>();
-            Optional<List<String>> allWords = extractText.getWords();
 
-            while (!synch.stopped() && allWords.isPresent()){
-                log("waiting to count  word ");
-                //barrier.hitAndWaitAll();
+            System.out.println("test1");
+           // ArrayList<ExtractAgent>  = new ArrayList<ExtractAgent>();
+            Optional<List<String>> allWords = extractAgent.getWords();
+            log("ready to initiate");
+            while (allWords.isPresent()){
+                //while (!synch.stopped() && allWords.isPresent()){
+                log("ready to count");
                 int numWords = 0;
-                ArrayList<String> ListOfWord = (ArrayList<String>) allWords.get();
-                synchronized (ListOfWord){
-                    for (String w : ListOfWord) {
-                        wordCount.computeWord(String.valueOf(w));
-                    }
-                     numWords += ListOfWord.size() ;
+                List<String> ListOfWord = allWords.get();
+                for (String w : ListOfWord) {
+                    wordCount.computeWord(w);
+                    // System.out.println(ListOfWord +"errrr");
                 }
-                log(" after counting we have new words : "+ListOfWord.size()+"total words now :"+numWords);
+                numWords += ListOfWord.size();
+                /*synchronized (ListOfWord){
+
+                     numWords += ListOfWord.size() ;
+                }*/
+               // System.out.println(ListOfWord +"errrr");
+                log(" after counting we have new words : "+numWords);
                 log("waiting to update the wordcounted");
                 //barrier.hitAndWaitAll();
-                synchronized (wordCount){
-                    wordCount.updatedCount(wordCount);
-                    allWords = extractText.getWords();
+                wordCount.update(wordCount);
+                /*synchronized (wordCount){
+
+                   // allWords = extractText.getWords();
                     stopped = true;
-                }
+                }*/
                 log("data structure updated");
                 //readyToDisplay.await();
                 //barrier.hitAndWaitAll();
             }
-        }catch(Exception ex){
 
-        }
+
+
+
     }
     private void log(String msg) {
-        // System.out.println("[COLLISION CHECKER " + Thread.currentThread().getName() +"] " + msg);
-        synchronized(System.out) {
+        System.out.println("[WORD COUNTER " + Thread.currentThread().getName() +"] " + msg);
+       /*
+       *  synchronized(System.out) {
             System.out.println("[ "+getName()+" ] "+msg);
-        }
+        }*/
     }
     private void waitFor(long ms) throws InterruptedException{
         Thread.sleep(ms);

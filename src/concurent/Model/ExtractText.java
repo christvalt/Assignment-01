@@ -11,7 +11,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.text.PDFTextStripper;
 
-public class ExtractText {
+public class ExtractText implements List<ExtractText> {
 
     private  PDDocument document;
     private final List<String> wordsToIgnore;
@@ -19,13 +19,13 @@ public class ExtractText {
     private List<ExtractText> extractText;
 
 
-    public ExtractText(final File DIRECTORY , final String wordsToIgnore) {
+    public ExtractText(final File DIRECTORY , final List<String> wordsToIgnore) {
         try {
-            this.loadDocument(new File(String.valueOf(DIRECTORY)));
+            this.loadDocument(DIRECTORY);
         } catch( IOException e) {
             e.printStackTrace();
         }
-        this.wordsToIgnore = Collections.singletonList(wordsToIgnore);
+        this.wordsToIgnore = wordsToIgnore;
         System.out.println("test");
     }
 
@@ -43,10 +43,10 @@ public class ExtractText {
         }
     }
 
-    public  synchronized Optional<List<String>> extractor(){
+    public  Optional<List<String>> extractor(){
         try {
-            PDFTextStripper stripper = null;
-            stripper = new PDFTextStripper();
+            PDFTextStripper stripper = new PDFTextStripper();
+           // stripper = new PDFTextStripper();
             for (int p = 1; p <= document.getNumberOfPages(); ++p) {
                 // Set the page interval to extract. If you don't, then all pages would be extracted.
                 stripper.setStartPage(p);
@@ -82,6 +82,120 @@ public class ExtractText {
     }
 
 
+    @Override
+    public int size() {
+        return 0;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return false;
+    }
+
+    @Override
+    public boolean contains(Object o) {
+        return false;
+    }
+
+    @Override
+    public Iterator<ExtractText> iterator() {
+        return null;
+    }
+
+    @Override
+    public Object[] toArray() {
+        return new Object[0];
+    }
+
+    @Override
+    public <T> T[] toArray(T[] a) {
+        return null;
+    }
+
+    @Override
+    public boolean add(ExtractText extractText) {
+        return false;
+    }
+
+    @Override
+    public boolean remove(Object o) {
+        return false;
+    }
+
+    @Override
+    public boolean containsAll(Collection<?> c) {
+        return false;
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends ExtractText> c) {
+        return false;
+    }
+
+    @Override
+    public boolean addAll(int index, Collection<? extends ExtractText> c) {
+        return false;
+    }
+
+    @Override
+    public boolean removeAll(Collection<?> c) {
+        return false;
+    }
+
+    @Override
+    public boolean retainAll(Collection<?> c) {
+        return false;
+    }
+
+    @Override
+    public void clear() {
+
+    }
+
+    @Override
+    public ExtractText get(int index) {
+        return null;
+    }
+
+    @Override
+    public ExtractText set(int index, ExtractText element) {
+        return null;
+    }
+
+    @Override
+    public void add(int index, ExtractText element) {
+
+    }
+
+    @Override
+    public ExtractText remove(int index) {
+        return null;
+    }
+
+    @Override
+    public int indexOf(Object o) {
+        return 0;
+    }
+
+    @Override
+    public int lastIndexOf(Object o) {
+        return 0;
+    }
+
+    @Override
+    public ListIterator<ExtractText> listIterator() {
+        return null;
+    }
+
+    @Override
+    public ListIterator<ExtractText> listIterator(int index) {
+        return null;
+    }
+
+    @Override
+    public List<ExtractText> subList(int fromIndex, int toIndex) {
+        return null;
+    }
 }
 
 

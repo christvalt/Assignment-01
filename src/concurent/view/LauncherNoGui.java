@@ -1,9 +1,6 @@
 package concurent.view;
 
-import concurent.Model.CounterAgent;
-import concurent.Model.ExtractText;
-import concurent.Model.Master;
-import concurent.Model.TaskCompletionLatch;
+import concurent.Model.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,8 +13,15 @@ public class LauncherNoGui
 
     {
         int nWorkers = Runtime.getRuntime().availableProcessors() + 1;
-        File DIRECTORY = new File(new File("C:\\Users\\camerum\\Desktop\\SW\\15.semanticWeb.pdf").getAbsolutePath());
-        String ignored = new File("C:\\Users\\camerum\\Desktop\\improve\\exlude.txt").getAbsolutePath() ;
+        //File DIRECTORY = new File(new File("C:\\Users\\camerum\\Desktop\\SW\\15.semanticWeb.pdf").getAbsolutePath());
+        //String ignored = String.valueOf(new File(new File("C:\\Users\\camerum\\Desktop\\SW\\").getAbsolutePath()));
+        String absolutep = new File("").getAbsolutePath()+"src/concurent/doc/";
+        String defaultDirectoryPath = "take";
+        String defaultIgnoreFilePath = "ignore/empty.txt";
+
+        String d = absolutep + (args.length >= 1 ? args[0] : defaultDirectoryPath);
+        String f = absolutep + (args.length >= 2 ? args[1] : defaultIgnoreFilePath);
+        //int n = args.length >= 3 ? Integer.parseInt(args[2]) : defaultN;
 
         if (args.length > 0) {
             if (args.length == 1) {
@@ -27,11 +31,15 @@ public class LauncherNoGui
                 System.exit(-1);
             }
         }
-        ExtractText extractText = new ExtractText(DIRECTORY,ignored);
+
+        InitialWordCounter wordCount = new InitialWordCounter();
         ArrayList<CounterAgent> counterAgent = new ArrayList<CounterAgent>();
         TaskCompletionLatch synch = new TaskCompletionLatch(nWorkers);
-        Master master = new Master(nWorkers,extractText,counterAgent,null,synch);
+        Master master = new Master(f,d,synch);
+
+        //CounterAgent ca = new CounterAgent(extractAgent,wordCount ,synch);
         master.start();
+      // ca.start();
 
     }
 }

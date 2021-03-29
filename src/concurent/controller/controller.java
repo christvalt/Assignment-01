@@ -7,7 +7,7 @@ import java.util.ArrayList;
 public class controller {
 
     private ArrayList<CounterAgent> counterAgent;
-    private ExtractText extractText;
+    private ExtractAgent extractAgent;
     private CountAndExtracView view;
     private TaskCompletionLatch synch;
 
@@ -18,7 +18,7 @@ public class controller {
     }
     public synchronized void started(){
         int nWorkers = Runtime.getRuntime().availableProcessors() +1;
-        new Master(nWorkers,extractText,counterAgent,view,synch).start();
+       // new Master(nWorkers,extractAgent,counterAgent,view,synch).start();
 
     }
     public synchronized void stopped(){

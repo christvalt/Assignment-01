@@ -9,8 +9,8 @@ public class CountAndExtracView {
 
     public CountAndExtracView() {}
 
-    public void update(WordCount map){
-        map.updatedCount(map);
+    public void update(InitialWordCounter map){
+       // map.updatedCount(map);
     }
     public void changeState(final String s){
         InterfaceFrame.updateText(s);
