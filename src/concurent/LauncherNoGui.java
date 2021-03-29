@@ -1,18 +1,18 @@
 package concurent;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 
 public class LauncherNoGui
 {
     public static void main(String[] args) throws IOException
 
-
-
     {
         int nWorkers = Runtime.getRuntime().availableProcessors() + 1;
+        File DIRECTORY = new File(new File("C:\\Users\\camerum\\Desktop\\SW\\15.semanticWeb.pdf").getAbsolutePath());
+        String ignored = new File("C:\\Users\\camerum\\Desktop\\improve\\exlude.txt").getAbsolutePath() ;
 
         if (args.length > 0) {
             if (args.length == 1) {
@@ -22,16 +22,12 @@ public class LauncherNoGui
                 System.exit(-1);
             }
         }
-
-
-        Master master = new Master(nWorkers);
+        ExtractText extractText = new ExtractText(DIRECTORY,ignored);
+        ArrayList<CounterAgent> counterAgent = new ArrayList<CounterAgent>();
+        TaskCompletionLatch synch = new TaskCompletionLatch(nWorkers);
+        Master master = new Master(nWorkers,extractText,counterAgent,null,synch);
         master.start();
-        ExtractTextSimple extractTextSimple = new ExtractTextSimple();
-        extractTextSimple.textExtractor();
-        WordCount wordCount = new WordCount();
-       String words = new String("faccio lezione sta  io an io");
 
-        System.out.println(wordCount.computeWord(words));
     }
 }
 
