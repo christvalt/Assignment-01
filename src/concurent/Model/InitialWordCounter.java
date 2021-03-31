@@ -10,9 +10,7 @@ import java.util.stream.Stream;
 public class InitialWordCounter {
     Map<String, Integer> initialMap = new HashMap<String, Integer>();
     private int nWords;
-//enlever le final apres
     public void computeWord( final String word) {
-        ///Map<String, Integer> wordCounter = new HashMap<String, Integer>();
         if (!initialMap.containsKey(word)) {  // first time we've seen this string
             initialMap.put(word, 1);//add the word
 
@@ -35,7 +33,6 @@ public class InitialWordCounter {
 
         Map<String,Integer>  finalMap = new HashMap<String,Integer>();
             nWords  += nWordCount;
-
       finalMap =
                 Stream.concat(finalMap.entrySet().stream(), wordCuntener.getInitialMap().entrySet().stream())
                         .collect(Collectors.groupingBy(Map.Entry::getKey,
@@ -47,12 +44,14 @@ public class InitialWordCounter {
         return this.initialMap;
     }
 
-    public void update(InitialWordCounter wordCuntener){
-        update(wordCuntener.getInitialMap());
+    public void updater( Map<String, Integer> finalMap ) {
+        for (Map.Entry<String, Integer> entry : finalMap.entrySet()) {
+            System.out.println(entry.getKey() + ": " + entry.getValue() + " time");
+        }
     }
+    public void All(InitialWordCounter initialWordCounter){
+        initialWordCounter.updater(initialWordCounter.getInitialMap());
 
-    public void update(final Map<String, Integer> finalMap) {
-        finalMap.forEach((w, count) -> System.out.println(w +": " + count +" times"));
     }
 
 

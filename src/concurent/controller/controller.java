@@ -6,22 +6,23 @@ import java.util.ArrayList;
 
 public class controller {
 
-    private ArrayList<CounterAgent> counterAgent;
-    private ExtractAgent extractAgent;
-    private CountAndExtracView view;
+
+    private Master master;
+    private CounterAgent counterAgent;
+    private int nWorkers ;
     private TaskCompletionLatch synch;
 
-    public controller(ArrayList<CounterAgent> counterAgent,CountAndExtracView view,TaskCompletionLatch synch){
+    public controller(CounterAgent counterAgent,int nWorkers){
         this.counterAgent =counterAgent;
-        this.view =view;
-        this.synch = synch;
+        this.nWorkers =nWorkers;
+        synch = new TaskCompletionLatch(nWorkers);
     }
-    public synchronized void started(){
+    public synchronized void notifyStarted(){
         int nWorkers = Runtime.getRuntime().availableProcessors() +1;
        // new Master(nWorkers,extractAgent,counterAgent,view,synch).start();
 
     }
-    public synchronized void stopped(){
+    public synchronized void notifyStopped(){
         synch.stop();
 
     }

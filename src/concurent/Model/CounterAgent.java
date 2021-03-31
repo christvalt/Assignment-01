@@ -6,50 +6,46 @@ import java.util.*;
 public class CounterAgent extends Thread{
     private final ExtractAgent extractAgent;
     private TaskCompletionLatch synch;
-    private InitialWordCounter wordCount;
+    private InitialWordCounter initialWordCounter;
+    private  int numWords = 0;
 
 
-    public CounterAgent(final ExtractAgent extractAgent , InitialWordCounter wordCount /*Barrier barrier ,concurent.controller.Flag stopFlag*/, TaskCompletionLatch synch){
+    public CounterAgent(final ExtractAgent extractAgent  /*Barrier barrier ,concurent.controller.Flag stopFlag*/, TaskCompletionLatch synch){
         this.extractAgent =extractAgent;
-        this.wordCount =new InitialWordCounter();
+        this.initialWordCounter =new InitialWordCounter();
         this.synch=synch;
     }
 
     public  void run() {
+
         boolean stopped = false;
+        log("ready");
+        Optional<List<String>> allWords = extractAgent.getWords();
+        while (!synch.stopped() && allWords.isPresent()) {
+           // log("waiting to count word");
+            List<String> ListOfWord = allWords.get();
+            log("new words: " + ListOfWord.size());
+            for (String w : ListOfWord) {
+                initialWordCounter.computeWord(w);
 
-            System.out.println("test1");
-           // ArrayList<ExtractAgent>  = new ArrayList<ExtractAgent>();
-            Optional<List<String>> allWords = extractAgent.getWords();
-            log("ready to initiate");
-            while (allWords.isPresent()){
-                //while (!synch.stopped() && allWords.isPresent()){
-                log("ready to count");
-                int numWords = 0;
-                List<String> ListOfWord = allWords.get();
-                for (String w : ListOfWord) {
-                    wordCount.computeWord(w);
-                    // System.out.println(ListOfWord +"errrr");
-                }
-                numWords += ListOfWord.size();
-                /*synchronized (ListOfWord){
-
-                     numWords += ListOfWord.size() ;
-                }*/
-               // System.out.println(ListOfWord +"errrr");
-                log(" after counting we have new words : "+numWords);
-                log("waiting to update the wordcounted");
-                //barrier.hitAndWaitAll();
-                wordCount.update(wordCount);
-                /*synchronized (wordCount){
-
-                   // allWords = extractText.getWords();
-                    stopped = true;
-                }*/
-                log("data structure updated");
-                //readyToDisplay.await();
-                //barrier.hitAndWaitAll();
+                stopped =true;
             }
+            numWords += ListOfWord.size();
+
+            log(" after counting i have  : " + numWords + "  new words");
+           // log("waiting to update the wordcounted");
+                initialWordCounter.All(initialWordCounter);
+                allWords = extractAgent.getWords();
+            /* if (allWords.isPresent()){
+                initialWordCounter.All(initialWordCounter);
+                allWords = extractAgent.getWords();
+            }*/
+
+            //log("work finish");
+            synch.notifyCompletion();
+            log("completed");
+
+        }
 
 
 
