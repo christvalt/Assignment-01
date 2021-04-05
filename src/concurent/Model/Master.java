@@ -1,17 +1,20 @@
 package concurent.Model;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 
 public class Master extends Thread{
 
     private File DIRECTORY;
+    private FilenameFilter filter;
     private int nWorkers;
     //private concurent.controller.Flag stopFlag;
     // private View view;
@@ -24,14 +27,25 @@ public class Master extends Thread{
 
     private ArrayList<CounterAgent> counterAgent;
     private final ExtractAgent extractAgent;
+    private int totalWordByThread = 0;
+    private int totalwords = 0;
+    private Lock lock;
+
+
 
 
     public Master(final String ignored, final String directoryPath, TaskCompletionLatch synch, int nWorkers) throws IOException {
         this.nWorkers=nWorkers;
         this. wordsToIgnore = Files.readAllLines(new File(ignored).toPath());
-        this.extractAgent = new ExtractAgent(Collections.singletonList(new ExtractText(DIRECTORY, this.wordsToIgnore)));
+        this.filter = new FilenameFilter() {
+            public boolean accept(File f, String name) {
+                return name.endsWith(".pdf");}
+        };
+        File[] files = new File (directoryPath).listFiles(this.filter);
+        this.extractAgent = new ExtractAgent(Arrays.stream(files).map(f -> new ExtractText(f, this.wordsToIgnore)).collect(Collectors.toList()));
         this.counterAgent=counterAgent;
         this.synch=synch;
+        this.lock =lock;
 
     }
 
@@ -42,7 +56,7 @@ public class Master extends Thread{
         int nCounterAgent = nWorkers;
         counterAgent = new ArrayList<CounterAgent>();
         for (int i = 0; i < nCounterAgent ; i++){
-            CounterAgent worker = new CounterAgent( this.extractAgent,synch);
+            CounterAgent worker = new CounterAgent(this.extractAgent,synch);
             counterAgent.add(worker);
             worker.start();
         }
@@ -60,12 +74,19 @@ public class Master extends Thread{
         } catch (InterruptedException ex) {
             log("interrupted");
             //view.changeState("Interrupted");
+
+        }
+
+        /* to stop CounterAgent */
+        //stopFlag.set();
+        for (CounterAgent c: counterAgent) {
+            c.interrupt();
         }
     }
 
 
 
-    
+
 
     private void log(String msg) {
         // System.out.println("[COLLISION CHECKER " + Thread.currentThread().getName() +"] " + msg);

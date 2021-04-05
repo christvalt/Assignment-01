@@ -11,11 +11,13 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.text.PDFTextStripper;
 
+import static java.lang.Math.min;
+
 public class ExtractText  {
 
     private  PDDocument document;
     private final List<String> wordsToIgnore;
-    private int startIndex;
+    private int p = 1;
     private List<ExtractText> extractText;
 
 
@@ -26,29 +28,41 @@ public class ExtractText  {
             e.printStackTrace();
         }
         this.wordsToIgnore = wordsToIgnore;
-        System.out.println("test");
+        //System.out.println("test");
     }
 
     private void loadDocument(final File file) throws IOException {
         try {
-            this.document = PDDocument.load(new File("C:\\Users\\camerum\\Desktop\\SW\\Tesi_ChiaraSilvestro.pdf"));
+            this.document = PDDocument.load(file);
             AccessPermission ap = this.document.getCurrentAccessPermission();
             if (!ap.canExtractContent()) {
                 throw new IOException("You do not have permission to extract text");
             }
-            //this.document = file.getName();
-            //System.out.println("Loaded " + file.getName());
+            System.out.println("OK " + file.getName());
         } catch (IOException e){
             e.printStackTrace();
         }
     }
 
     public  Optional<List<String>> extractor(){
-        System.out.println("test333");
+       // System.out.println("test333");
         try {
             PDFTextStripper stripper = new PDFTextStripper();
            // stripper = new PDFTextStripper();
-            for (int p = 1; p <= document.getNumberOfPages(); ++p) {
+            while(p<= document.getNumberOfPages()){
+                stripper.setStartPage(p);
+                //p = min(document.getNumberOfPages(), p );
+                stripper.setEndPage(p);
+                p += 1;
+                String text = (stripper.getText(document)).toLowerCase();
+                List<String> words = new ArrayList<>(Arrays.stream(text.split("\\W+")).collect(Collectors.toList()));
+                for (String toIgnore : wordsToIgnore) {
+                    words.removeIf(word -> word.equals(toIgnore));
+                }
+                return Optional.of(words);//Optional.of(words);
+
+            }
+            /*for (int p = 1; p <= document.getNumberOfPages(); ++p) {
                 // Set the page interval to extract. If you don't, then all pages would be extracted.
                 stripper.setStartPage(p);
                 stripper.setEndPage(p);
@@ -56,13 +70,14 @@ public class ExtractText  {
                 String text = stripper.getText(document);
                // System.out.println("test333"+p);
                 List<String> words = new ArrayList<>(Arrays.stream(text.split("\\W+")).collect(Collectors.toList()));
+                System.out.println("tess0000"+words);
                 for (String toIgnore : wordsToIgnore) {
                     words.removeIf(word -> word.equals(toIgnore));
                 }
                 //System.out.println(text);
                 return Optional.of(words);
-            }
-            document.close();
+            }*/
+            //document.close();
         }catch (IOException e) {
             e.printStackTrace();
         }

@@ -17,12 +17,14 @@ public class controller {
         this.nWorkers =nWorkers;
         synch = new TaskCompletionLatch(nWorkers);
     }
-    public synchronized void notifyStarted(){
+    public synchronized void Started(){
         int nWorkers = Runtime.getRuntime().availableProcessors() +1;
-       // new Master(nWorkers,extractAgent,counterAgent,view,synch).start();
+        synch = new TaskCompletionLatch(nWorkers);
+
+        // new Master(nWorkers,extractAgent,counterAgent,view,synch).start();
 
     }
-    public synchronized void notifyStopped(){
+    public synchronized void Stopped(){
         synch.stop();
 
     }

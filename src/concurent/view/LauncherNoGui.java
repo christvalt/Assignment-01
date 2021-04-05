@@ -5,6 +5,8 @@ import concurent.Model.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 
 public class LauncherNoGui
@@ -16,14 +18,14 @@ public class LauncherNoGui
 
 
         String absolutep = new File("").getAbsolutePath()+"/src/concurent/doc/";
-        String defaultDirectoryPath = "take";
-        String defaultIgnoreFilePath = "empty.txt";
+        String defaultDirectoryPath = "PDF/PDF";
+        String defaultIgnoreFilePath = "ignore/empty.txt";
 
         String d = absolutep +  defaultDirectoryPath;
         String f = absolutep +defaultIgnoreFilePath;
         //int n = args.length >= 3 ? Integer.parseInt(args[2]) : defaultN;
 
-
+       // Lock lock = new ReentrantLock();
         InitialWordCounter wordCount = new InitialWordCounter();
         ArrayList<CounterAgent> counterAgent = new ArrayList<CounterAgent>();
         TaskCompletionLatch synch = new TaskCompletionLatch(nWorkers);
@@ -32,6 +34,8 @@ public class LauncherNoGui
         //CounterAgent ca = new CounterAgent(extractAgent,wordCount ,synch);
         master.start();
       // ca.start();
+
+
 
     }
 }

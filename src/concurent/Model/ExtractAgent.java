@@ -19,13 +19,13 @@ public class ExtractAgent {
     }
 
 
-    public  synchronized Optional<List<String>> getWords(){
-        //System.out.println("te"  +extractText.size());
+    public  Optional<List<String>> getWords(){
+
         while (startIndex < extractText.size()) {
             //System.out.println("test2");
             Optional<List<String>>  words = extractText.get(startIndex).extractor();
+            //System.out.println("present test"  +words);
             if ( words.isPresent()) {
-                //System.out.println("eeeo");
                 return words;
             } else {
                 startIndex +=1;
