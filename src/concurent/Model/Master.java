@@ -1,5 +1,7 @@
 package concurent.Model;
 
+import concurent.controller.Flag;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -30,11 +32,12 @@ public class Master extends Thread{
     private int totalWordByThread = 0;
     private int totalwords = 0;
     private Lock lock;
+    private Flag stopFlag;
 
 
 
 
-    public Master(final String ignored, final String directoryPath, TaskCompletionLatch synch, int nWorkers) throws IOException {
+    public Master(final String ignored, final String directoryPath, TaskCompletionLatch synch, int nWorkers,Flag stopFlag) throws IOException {
         this.nWorkers=nWorkers;
         this. wordsToIgnore = Files.readAllLines(new File(ignored).toPath());
         this.filter = new FilenameFilter() {
@@ -46,7 +49,7 @@ public class Master extends Thread{
         this.counterAgent=counterAgent;
         this.synch=synch;
         this.lock =lock;
-
+        this.stopFlag= stopFlag;
     }
 
     public void run(){
@@ -56,7 +59,7 @@ public class Master extends Thread{
         int nCounterAgent = nWorkers;
         counterAgent = new ArrayList<CounterAgent>();
         for (int i = 0; i < nCounterAgent ; i++){
-            CounterAgent worker = new CounterAgent(this.extractAgent,synch);
+            CounterAgent worker = new CounterAgent(this.extractAgent, stopFlag, synch);
             counterAgent.add(worker);
             worker.start();
         }
@@ -66,7 +69,7 @@ public class Master extends Thread{
         try {
             synch.waitCompletion();
             log("completion arrived");
-            //view.update(wordCount);
+            view.update(wordCount);
 
             long t1 = System.currentTimeMillis();
             // view.changeState("Completed - time elapsed: "+(t1-t0));

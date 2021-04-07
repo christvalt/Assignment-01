@@ -1,5 +1,7 @@
 package concurent.Model;
 
+import concurent.controller.Flag;
+
 import java.util.*;
 
 
@@ -8,14 +10,14 @@ public class CounterAgent extends Thread{
     private TaskCompletionLatch synch;
     private InitialWordCounter initialWordCounter;
     private  int numWords = 0;
-    private Master master;
+    private Flag stopFlag;
 
 
-    public CounterAgent(final ExtractAgent extractAgent  /*Barrier barrier ,concurent.controller.Flag stopFlag*/, TaskCompletionLatch synch){
+    public CounterAgent(final ExtractAgent extractAgent  /*Barrier barrier ,concurent.controller.*/ ,Flag stopFlag, TaskCompletionLatch synch){
         this.extractAgent =extractAgent;
         this.initialWordCounter =new InitialWordCounter();
         this.synch=synch;
-       // this.master= master;
+        this.stopFlag = stopFlag;
     }
 
 
@@ -30,7 +32,7 @@ public class CounterAgent extends Thread{
         Optional<List<String>> allWords ;
         //boolean allWordss =(allWords).isPresent();
         Optional<List<String>> allWordsGet;
-        while ((allWords=extractAgent.getWords()).isPresent()) {
+        while (!stopFlag.isSet()&&(allWords=extractAgent.getWords()).isPresent()) {
 
             // log("waiting to count word");
             List<String> ListOfWord = allWords.get();

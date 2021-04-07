@@ -1,6 +1,7 @@
 package concurent.view;
 
 import concurent.Model.*;
+import concurent.controller.Flag;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,7 +30,7 @@ public class LauncherNoGui
         InitialWordCounter wordCount = new InitialWordCounter();
         ArrayList<CounterAgent> counterAgent = new ArrayList<CounterAgent>();
         TaskCompletionLatch synch = new TaskCompletionLatch(nWorkers);
-        Master master = new Master(f,d,synch,nWorkers);
+        Master master = new Master(f,d,synch,nWorkers,new Flag());
 
         //CounterAgent ca = new CounterAgent(extractAgent,wordCount ,synch);
         master.start();

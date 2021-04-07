@@ -12,21 +12,18 @@ import java.util.concurrent.locks.*;
 
 public class InitialWordCounter {
 
-
     private Map<String, Integer> sortedWordCount;
     private int numberOfOutputWords= 4;
     private int stateWords;
     ReadWriteLock lock = new ReentrantReadWriteLock();
     Lock writeLock = lock.writeLock();
 
-    //Condition stackEmptyCondition = lock.newCondition();
-    //Condition stackFullCondition = lock.newCondition();
-
-
-
     Map<String, Integer> initialMap = new HashMap<String, Integer>();
     Map<String, Integer> getSortedWordCount = new HashMap<String, Integer>();
     private int nWords;
+    private boolean completed;
+    private boolean stopped ;
+
     public synchronized   void  computeWord( final String word) {
         if (!initialMap.containsKey(word)) {  // first time we've seen this string
             try {
@@ -35,11 +32,8 @@ public class InitialWordCounter {
             } finally {
                 writeLock.unlock();
             }
-
-
         }
         else {
-
             try {
                 writeLock.lock();
                 int count = initialMap.get(word);
@@ -47,31 +41,14 @@ public class InitialWordCounter {
             } finally {
                 writeLock.unlock();
             }
-
-
-
-
         }
     }
-
 
 
    public Map<String, Integer> getInitialMap() {
         return initialMap;
     }
 
-
-
-    /*public synchronized void update (final int nWords, final InitialWordCounter map){
-        this.totWords += nWords;
-        this.sortedWordCount =
-                Stream.concat(sortedWordCount.entrySet().stream(), map.getInitialMap().entrySet().stream())
-                        .collect(Collectors.groupingBy(Map.Entry::getKey,
-                                Collectors.summingInt(Map.Entry::getValue))).entrySet().stream()
-                        .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
-                                (x,y)-> {throw new AssertionError();}, LinkedHashMap::new));
-    }*/
     public synchronized void update (final int nWords, final InitialWordCounter map){
         this.stateWords += nWords;
         this.sortedWordCount = new LinkedHashMap<>();
@@ -86,13 +63,13 @@ public class InitialWordCounter {
     }
 
 
-
     public synchronized Map<String, Integer> getSortedWordCount(){
         return this.sortedWordCount.entrySet().stream()
                 .limit(numberOfOutputWords)
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
                         (e1, e2) -> e1, LinkedHashMap::new));
     }
+
     public synchronized int getStateWords(){
         return this.stateWords;
     }
@@ -102,9 +79,7 @@ public class InitialWordCounter {
         for (Map.Entry<String, Integer> entry : this.getSortedWordCount.entrySet()) {
             System.out.println(entry.getKey() + ": " + entry.getValue() + " time");
         }
-
     }
-
 
     public  void  finalUpdater() {
         try {
@@ -116,15 +91,15 @@ public class InitialWordCounter {
         }
     }
 
+    public boolean isCompleted(){
+        return this.completed;
+    }
 
-    /*public  synchronized void All(InitialWordCounter initialWordCounter){
-        try {
-            writeLock.lock();
-            initialWordCounter.updater(initialWordCounter.getInitialMap());
-        } finally {
-            writeLock.unlock();
-        }
+    public boolean isStopped(){
+        return this.stopped;
+    }
 
-    }*/
+
+
 
 }

@@ -10,4 +10,16 @@ public class InterfaceFrame {
             //state.setText(s);
         });
     }
+
+    public void addListener(InputListener l) {
+
+    }
+
+    public void setVisible(boolean b) {
+
+    }
+
+    public void updatecount() {
+
+    }
 }
