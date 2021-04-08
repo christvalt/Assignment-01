@@ -7,18 +7,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
-import concurent.*;
+import javax.swing.*;
+
 import concurent.Model.CounterAgent;
+import concurent.Model.InitialWordCounter;
 import concurent.controller.Controller;
 
 public class WordCounterFrame extends JFrame implements ActionListener{
@@ -32,14 +29,17 @@ public class WordCounterFrame extends JFrame implements ActionListener{
     private JTextField fileField; 
     private JButton startbutton;
     private JButton stopbutton;;
+	private InitialWordCounter initialWordCounter;
+	private FrequentwordPanel frequentWordPanel;
+	private JLabel lbl;
 	private ArrayList<InputListener> listeners;
-	//private FrequentWordPanel setPanel;
+	private View view;
 
-	 // Constructor to setup the GUI components
+	// Constructor to setup the GUI components
 	public WordCounterFrame(Controller controller, CounterView view) {
 		super("Word Occurrences Counter");
-		
-		//listeners = new ArrayList<InputListener>();
+
+		listeners = new ArrayList<InputListener>();
 
 		setSize(500, 260);
 		setResizable(false);
@@ -80,7 +80,10 @@ public class WordCounterFrame extends JFrame implements ActionListener{
 		add(fileField);
 		add(browseButton2);
 		add(maxOccurrenceLabel);
-		
+
+
+		frequentWordPanel = new FrequentwordPanel(57,57);
+		frequentWordPanel.setSize(57,57);
 		
 		startbutton = new JButton("Start");
 		//startbutton.addActionListener(this);
@@ -102,18 +105,14 @@ public class WordCounterFrame extends JFrame implements ActionListener{
 		startbutton.addActionListener(ev -> {
 			startbutton.setEnabled(false);
 			stopbutton.setEnabled(true);
-			try {
-				controller.Started(view);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			controller.started(view);
 		});
 
 		stopbutton.setEnabled(false);
 		stopbutton.addActionListener(ev -> {
 			startbutton.setEnabled(true);
 			stopbutton.setEnabled(false);
-			controller.Stopped(view);
+			controller.stopped(view);
 		});
 		addWindowListener(new WindowAdapter(){
 			public void windowClosing(WindowEvent ev){
@@ -130,18 +129,54 @@ public class WordCounterFrame extends JFrame implements ActionListener{
 			setVisible(true);
 		});
 	}
-	public void display(CounterAgent counterAgent, Lock lock){
-		viewerFrame.display(counterAgent, lock);
+	public void display(InitialWordCounter initialWordCounter, Lock lock){
+		SwingUtilities.invokeLater(() -> {
+			frequentWordPanel.display(initialWordCounter, lock);
+		});
+
+
 	}
 
 
-	private ViewerFrame viewerFrame;
-	public class ViewerFrame extends JFrame{
+	public void addListener(InputListener l){
+		listeners.add(l);
+	}
+
+	public void actionPerformed(ActionEvent ev){
+		String cmd = ev.getActionCommand();
+		if (cmd.equals("start")){
+			notifyStarted();
+		} else if (cmd.equals("stop")){
+			notifyStopped();
+		}
+	}
+
+	private void notifyStarted(){
+		for (InputListener l: listeners){
+			l.started(view);
+		}
+
+	}
+
+	private void notifyStopped(){
+		for (InputListener l: listeners){
+			l.stopped(view);
+		}
+	}
+
+
+
+
+
+
+
+	public class FrequentwordPanel extends JFrame{
 
 		private CounterAgent counterAgent;
 		private Lock lock;
+		private InitialWordCounter initialWordCounter;
 
-		public ViewerFrame(int w, int h) {
+		public FrequentwordPanel(int w, int h) {
 
 			setTitle("Word Occurences Counter");
 			setSize(800, 650);
@@ -162,106 +197,27 @@ public class WordCounterFrame extends JFrame implements ActionListener{
 			setVisible(true);
 
 		}
-		public void display(CounterAgent counterAgent, Lock lock) {
-			this.counterAgent = counterAgent;
-			this.lock = lock;
-			repaint();
+		public void display(InitialWordCounter initialWordCounter, Lock lock) {
+			try{this.initialWordCounter = initialWordCounter;
+				this.lock = lock;
+				AtomicInteger countWords = new AtomicInteger();
+				//lbl.setText(lbl.getText() + InitialWordCounter() + " words analysed <br/>");
+				InitialWordCounter.getSortedWordCount().forEach((s, i) -> {
+					if (countWords.get() % 5 == 0){
+						lbl.setText(lbl.getText() + "<br/>");
+					}
+					lbl.setText(lbl.getText() +  s + " (" + i + " times) &nbsp; &nbsp;");
+					countWords.getAndIncrement();
+				});}catch (Exception ex){
+				ex.printStackTrace();
+			}
+
+
 		}
 
 
 	}
 
-
-
-	/*public void display(Simulation sim, Semaphore done){
-		bodyAreaPanel.display(sim, done);
-	}*/
-	
-	
-	
-	
-	/*public void updateImage(int[] image){
-		SwingUtilities.invokeLater(() -> {
-				setPanel.updateImage(image);
-		});
-	}*/
-	
-	/*public void updateText(final String s){
-		SwingUtilities.invokeLater(() -> {
-				state.setText(s);
-		});
-	}*/
-
-	/*public void addListener(InputListener l){
-		listeners.add(l);
-	}*/
-	
-	/*public void actionPerformed(ActionEvent ev){
-		String cmd = ev.getActionCommand(); 
-		if (cmd.equals("start")){
-			notifyStarted();
-		} else if (cmd.equals("stop")){
-			notifyStopped();
-		}
-	}*/
-
-	/*private void notifyStarted(){
-		Complex c0 = new Complex(Double.parseDouble(cx.getText()),Double.parseDouble(cy.getText()));
-		double d = Double.parseDouble(diam.getText());
-		for (InputListener l: listeners){
-			l.started(c0, d);
-		}
-	}*/
-	
-	/*private void notifyStopped(){
-		for (InputListener l: listeners){
-			l.stopped();
-		}
-	}*/
-	
-	
-	
-	// methods to define actions to performed
-
-	@Override
-	public void actionPerformed(ActionEvent ae) {
-	
-   //Handle browse button
-	
-	               	
-	
-   //Handle start button
-	
-	
-	
-	
-   //Handle stop button
-	
-   }
-
-
-	/*public class FrequentWordPanel extends JPanel {
-
-		private BufferedImage image;
-
-		public FrequentWordPanel(int w, int h){
-			this.image = new BufferedImage(w,h,BufferedImage.TYPE_INT_RGB);
-		}
-
-		public void updateImage(int[] rgbData){
-			int w = image.getWidth();
-			int h = image.getHeight();
-			image.setRGB(0, 0, w, h, rgbData, 0, w);
-			repaint();
-		}
-		public void paintComponent(Graphics g) {
-			super.paintComponent(g);
-			Graphics2D g2 = (Graphics2D)g;
-			g2.drawImage(image, 0, 0, null);
-		}
-	}*/
-
-    
 }
 
 

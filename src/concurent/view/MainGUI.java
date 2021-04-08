@@ -22,22 +22,25 @@ public class MainGUI {
     {
         String absolutep = new File("").getAbsolutePath()+"/src/concurent/doc/";
         String defaultDirectoryPath = "PDF/PDF";
-        String defaultIgnoreFilePath = "ignore/empty.txt";
+        String defaultPath = "ignore/empty.txt";
 
         String d = absolutep +  defaultDirectoryPath;
-        String f = absolutep +defaultIgnoreFilePath;
+        String f = absolutep +defaultPath;
 
 
 
-        final List<String> wordsToIgnore= Files.readAllLines(new File(f).toPath());;
+
+      // final List<String> wordsToIgnore= Files.readAllLines(new File(f).toPath());;
 
 
-        FilenameFilter filter= new FilenameFilter() {
+        /*FilenameFilter filter= new FilenameFilter() {
             public boolean accept(File f, String name) {
                 return name.endsWith(".pdf");}
-        };
-        File[] files = new File (d).listFiles(filter);
-      new ExtractAgent(Arrays.stream(files).map(w -> new ExtractText(w, wordsToIgnore)).collect(Collectors.toList()));
+        };*/
+       //File[] files = new File (d).listFiles(filter);
+
+
+      //new ExtractAgent(Arrays.stream(files).map(w -> new ExtractText(w, wordsToIgnore)).collect(Collectors.toList()));
         int nWorkers = Runtime.getRuntime().availableProcessors() + 1;
         Flag stopFlag = new Flag();
 
@@ -50,14 +53,16 @@ public class MainGUI {
 
 
         TaskCompletionLatch synch = new TaskCompletionLatch(nWorkers);
+        InitialWordCounter ini= new InitialWordCounter();
         //ExtractText extractor = new ExtractText(d,f);
-        ExtractAgent extractAgent = new ExtractAgent(Arrays.stream(files).map(w -> new ExtractText(w, wordsToIgnore)).collect(Collectors.toList()));
+        //ExtractAgent extractAgent = new ExtractAgent(Arrays.stream(files).map(w -> new ExtractText(w, wordsToIgnore)).collect(Collectors.toList()));
 
-        CounterAgent counterAgent = new CounterAgent(extractAgent,stopFlag,synch);
+        //CounterAgent counterAgent = new CounterAgent(extractAgent,stopFlag,synch);
 
-        //Master master = new Master(f,d,synch,nWorkers,new Flag());
-        Controller controller = new Controller(counterAgent,nWorkers);
-        CounterView view = new CounterView(620,620, controller,counterAgent);
+
+        Controller controller = new Controller(f,d,nWorkers);
+        CounterView view = new CounterView(880,620, controller ,f,d,ini);
+        view.addListener(controller);
         view.showUp();
 
        // master.start();

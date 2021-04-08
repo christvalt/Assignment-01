@@ -29,8 +29,11 @@ public class LauncherNoGui
        // Lock lock = new ReentrantLock();
         InitialWordCounter wordCount = new InitialWordCounter();
         ArrayList<CounterAgent> counterAgent = new ArrayList<CounterAgent>();
+        //ExtractAgent extractAgent  = new ExtractAgent();
+
+        //CounterAgent counterAgent1 =new CounterAgent();
         TaskCompletionLatch synch = new TaskCompletionLatch(nWorkers);
-        Master master = new Master(f,d,synch,nWorkers,new Flag());
+        Master master = new Master(f,d,null,synch,nWorkers,new Flag());
 
         //CounterAgent ca = new CounterAgent(extractAgent,wordCount ,synch);
         master.start();

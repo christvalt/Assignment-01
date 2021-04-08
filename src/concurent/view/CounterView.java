@@ -11,15 +11,19 @@ import java.util.concurrent.locks.Lock;
 
 public class CounterView implements View {
 
-    private final CounterAgent counterAgent;
+   // private final CounterAgent counterAgent;
+    private final InitialWordCounter initialWordCounter;
     private WordCounterFrame wordCounterFrame;
     private Lock lock;
+    private  String d ;
+    private String f ;
 
 
-    public CounterView(int w, int h, Controller controller ,CounterAgent counterAgent){
+    public CounterView(int w, int h, Controller controller ,String f , String d, InitialWordCounter initialWordCounter){
         wordCounterFrame = new WordCounterFrame(controller ,this);
         this.lock = lock;
-        this.counterAgent =counterAgent;
+       // this.counterAgent =counterAgent;
+        this.initialWordCounter =initialWordCounter;
 
     }
 
@@ -29,14 +33,10 @@ public class CounterView implements View {
             wordCounterFrame.setVisible(true);
         });
     }
+    public void addListener(InputListener l){
+        wordCounterFrame.addListener(l);
+    }
 
-    /*public void update(InitialWordCounter initialWordCounter){
-        wordCounterFrame.updatecount();
-    }*/
-
-    /*public void changeState(final String s){
-        wordCounterFrame.updateText(s);
-    }*/
 
 
     public void showUp() {
@@ -50,7 +50,7 @@ public class CounterView implements View {
     public void update() {
         lock.lock();
         try {
-            wordCounterFrame.display(counterAgent,lock);
+            wordCounterFrame.display(initialWordCounter,lock);
         } finally {
             lock.unlock();
         }

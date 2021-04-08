@@ -3,8 +3,8 @@ package concurent.view;
 public interface InputListener {
 
 
-    void started( );
+    void started( View view);
 
-    void stopped();
+    void stopped(View view);
 
 }

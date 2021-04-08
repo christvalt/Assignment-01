@@ -1,6 +1,7 @@
 package concurent.Model;
 
 import concurent.controller.Flag;
+import concurent.view.View;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -22,7 +23,7 @@ public class Master extends Thread{
     // private View view;
     private InitialWordCounter wordCount;
     private TaskCompletionLatch synch;
-    private CountAndExtracView view;
+    private View view;
     private final List<String> wordsToIgnore;
     //private final int outputWords;
     //private final ExtractAgent extractAgent;
@@ -37,9 +38,11 @@ public class Master extends Thread{
 
 
 
-    public Master(final String ignored, final String directoryPath, TaskCompletionLatch synch, int nWorkers,Flag stopFlag) throws IOException {
+    public Master(final String ignored, final String directoryPath , View view, TaskCompletionLatch synch, int nWorkers, Flag stopFlag) throws IOException {
         this.nWorkers=nWorkers;
+        System.out.println("test ingre"+ignored);
         this. wordsToIgnore = Files.readAllLines(new File(ignored).toPath());
+
         this.filter = new FilenameFilter() {
             public boolean accept(File f, String name) {
                 return name.endsWith(".pdf");}
@@ -50,6 +53,8 @@ public class Master extends Thread{
         this.synch=synch;
         this.lock =lock;
         this.stopFlag= stopFlag;
+        this.view=view;
+
     }
 
     public void run(){
@@ -69,7 +74,11 @@ public class Master extends Thread{
         try {
             synch.waitCompletion();
             log("completion arrived");
-            view.update(wordCount);
+            //view.update(wordCount);
+            if (view != null) {
+                view.update();
+                //stat.notifyDisplayCompleted();
+            }
 
             long t1 = System.currentTimeMillis();
             // view.changeState("Completed - time elapsed: "+(t1-t0));
@@ -79,6 +88,7 @@ public class Master extends Thread{
             //view.changeState("Interrupted");
 
         }
+
 
         /* to stop CounterAgent */
         //stopFlag.set();

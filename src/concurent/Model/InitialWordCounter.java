@@ -10,10 +10,10 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.*;
 
 
-public class InitialWordCounter {
+public  class InitialWordCounter {
 
-    private Map<String, Integer> sortedWordCount;
-    private int numberOfOutputWords= 4;
+    private static Map<String, Integer> sortedWordCount;
+    private static  int numberOfOutputWords= 4;
     private int stateWords;
     ReadWriteLock lock = new ReentrantReadWriteLock();
     Lock writeLock = lock.writeLock();
@@ -63,15 +63,18 @@ public class InitialWordCounter {
     }
 
 
-    public synchronized Map<String, Integer> getSortedWordCount(){
-        return this.sortedWordCount.entrySet().stream()
+    public static synchronized Map<String, Integer> getSortedWordCount(){
+        return sortedWordCount.entrySet().stream()
                 .limit(numberOfOutputWords)
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
                         (e1, e2) -> e1, LinkedHashMap::new));
     }
 
-    public synchronized int getStateWords(){
+    public  synchronized int getStateWords(){
         return this.stateWords;
+    }
+    public  synchronized int getGetStateWords(){
+        return getStateWords();
     }
 
     public  synchronized void  updater() {

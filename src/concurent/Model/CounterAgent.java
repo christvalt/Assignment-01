@@ -40,7 +40,7 @@ public class CounterAgent extends Thread{
 
                 for (String w : ListOfWord) {
                     initialWordCounter.computeWord(w);
-                       stopped =true;
+                      // stopped =true;
                     //wordToBeupdate.putAll();
                 }
                 numWords += ListOfWord.size();
@@ -70,27 +70,6 @@ public class CounterAgent extends Thread{
             log("completed");
             //master.threadCompleted(numWords, initialWordCounter);
         }
-
-
-       /* log("ready");
-        Optional<List<String>> allWords = extractAgent.getWords();
-        while (allWords.isPresent()) {
-           // log("waiting to count word");
-            List<String> ListOfWord = allWords.get();
-            log("new words: " + ListOfWord.size());
-            for (String w : ListOfWord) {
-                initialWordCounter.computeWord(w);
-            }
-            numWords += ListOfWord.size();
-            //log(" after counting i have  : " + numWords + "  new words");
-            initialWordCounter.All(initialWordCounter);
-            allWords = extractAgent.getWords();
-        }
-
-        log("completed");
-       // master.threadCompleted(numWords,initialWordCounter);
-    */
-
 
     }
     private void log(String msg) {
