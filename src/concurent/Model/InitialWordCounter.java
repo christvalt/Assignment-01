@@ -15,31 +15,31 @@ public  class InitialWordCounter {
     private static Map<String, Integer> sortedWordCount;
     private static  int numberOfOutputWords= 4;
     private int stateWords;
-    ReadWriteLock lock = new ReentrantReadWriteLock();
-    Lock writeLock = lock.writeLock();
+    //ReadWriteLock lock = new ReentrantReadWriteLock();
+    //Lock writeLock = lock.writeLock();
+    Lock lock = new ReentrantLock();
 
     Map<String, Integer> initialMap = new HashMap<String, Integer>();
     Map<String, Integer> getSortedWordCount = new HashMap<String, Integer>();
     private int nWords;
-    private boolean completed;
-    private boolean stopped ;
+
 
     public synchronized   void  computeWord( final String word) {
         if (!initialMap.containsKey(word)) {  // first time we've seen this string
             try {
-                writeLock.lock();
+                lock.lock();
                 initialMap.put(word, 1);//add the word
             } finally {
-                writeLock.unlock();
+                lock.unlock();
             }
         }
         else {
             try {
-                writeLock.lock();
+                lock.lock();
                 int count = initialMap.get(word);
                 initialMap.put(word, count + 1);//updating the cont of word
             } finally {
-                writeLock.unlock();
+                lock.unlock();
             }
         }
     }
@@ -73,34 +73,21 @@ public  class InitialWordCounter {
     public  synchronized int getStateWords(){
         return this.stateWords;
     }
-    public  synchronized int getGetStateWords(){
-        return getStateWords();
-    }
-
-    public  synchronized void  updater() {
-        this.getSortedWordCount();
-        for (Map.Entry<String, Integer> entry : this.getSortedWordCount.entrySet()) {
-            System.out.println(entry.getKey() + ": " + entry.getValue() + " time");
-        }
-    }
 
     public  void  finalUpdater() {
         try {
-            writeLock.lock();
+            lock.lock();
             this.getSortedWordCount().forEach((word, count) -> System.out.println(word +": " + count +" times"));
             System.out.println("total  word:" +getStateWords());
         } finally {
-            writeLock.unlock();
+            lock.unlock();
         }
     }
 
-    public boolean isCompleted(){
-        return this.completed;
-    }
 
-    public boolean isStopped(){
-        return this.stopped;
-    }
+
+
+
 
 
 

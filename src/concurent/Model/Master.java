@@ -34,8 +34,12 @@ public class Master extends Thread{
     private int totalwords = 0;
     private Lock lock;
     private Flag stopFlag;
-
-
+    private boolean completed;
+    private boolean stopped ;
+    private int threadFinal;
+    private int threadsStopped;
+    private Barrier barrier;
+    //private Barrier barrier;
 
 
     public Master(final String ignored, final String directoryPath , View view, TaskCompletionLatch synch, int nWorkers, Flag stopFlag) throws IOException {
@@ -54,6 +58,8 @@ public class Master extends Thread{
         this.lock =lock;
         this.stopFlag= stopFlag;
         this.view=view;
+        this.threadsStopped = 0;
+       this.barrier = new BarrierImpl(nWorkers);
 
     }
 
@@ -64,36 +70,63 @@ public class Master extends Thread{
         int nCounterAgent = nWorkers;
         counterAgent = new ArrayList<CounterAgent>();
         for (int i = 0; i < nCounterAgent ; i++){
-            CounterAgent worker = new CounterAgent(this.extractAgent, stopFlag, synch);
+            CounterAgent worker = new CounterAgent(this.extractAgent, barrier ,stopFlag, synch);
             counterAgent.add(worker);
             worker.start();
         }
 
+        Statistics stat = Statistics.getInstance();
+        stat.notifyStartedNewSimulation(counterAgent, nWorkers);
         // main loop
+
         log("wait completion");
         try {
+
+            stat.notifycomputeWordPosCompleted();
+
+
+            barrier.hitAndWaitAll();
             synch.waitCompletion();
             log("completion arrived");
-            //view.update(wordCount);
+            barrier.hitAndWaitAll();
+            stat.notifyuPDATEwordOccurenceCompleted();
             if (view != null) {
                 view.update();
-                //stat.notifyDisplayCompleted();
+                stat.notifyDisplayCompleted();
             }
+            stat.notifyEndSimulation();
+            stat.dump();
 
-            long t1 = System.currentTimeMillis();
-            // view.changeState("Completed - time elapsed: "+(t1-t0));
 
         } catch (InterruptedException ex) {
-            log("interrupted");
-            //view.changeState("Interrupted");
 
+        }
         }
 
 
-        /* to stop CounterAgent */
-        //stopFlag.set();
-        for (CounterAgent c: counterAgent) {
-            c.interrupt();
+
+
+
+    public boolean isCompleted(){
+
+        return this.completed;
+
+    }
+    public void threadCompleted(){
+        this.threadFinal += 1;
+        if (threadFinal == nWorkers){
+            this.completed = true;
+            System.out.println("completed.");
+
+        }
+    }
+
+    public void threadStopped(){
+        this.threadsStopped += 1;
+        if (threadsStopped == nWorkers){
+            this.stopped = true;
+            System.out.println("All stopped.");
+            //this.notifyObservers();
         }
     }
 

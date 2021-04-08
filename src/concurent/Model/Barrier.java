@@ -1,4 +1,4 @@
-package concurent;
+package concurent.Model;
 
 public interface Barrier {
 

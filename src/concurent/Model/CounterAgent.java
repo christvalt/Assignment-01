@@ -11,73 +11,60 @@ public class CounterAgent extends Thread{
     private InitialWordCounter initialWordCounter;
     private  int numWords = 0;
     private Flag stopFlag;
+    private  boolean running = true;
+    private Master master;
+    private Barrier barrier;
 
 
-    public CounterAgent(final ExtractAgent extractAgent  /*Barrier barrier ,concurent.controller.*/ ,Flag stopFlag, TaskCompletionLatch synch){
+    public CounterAgent(final ExtractAgent extractAgent  , Barrier barrier  ,Flag stopFlag, TaskCompletionLatch synch){
         this.extractAgent =extractAgent;
         this.initialWordCounter =new InitialWordCounter();
         this.synch=synch;
         this.stopFlag = stopFlag;
+        this.barrier = barrier;
     }
 
 
     public  void run() {
 
-         boolean stopped = false;
-        log("ready to count words ");
-       // ArrayList<CollisionToCheck> collisionsToBeSolved = new ArrayList<CollisionToCheck>();
-
-        Map<String, Integer> wordToBeupdate = new HashMap<String, Integer>();
-        //dfWordsOpt = wordsExtractor.getWords()).isPresent()
         Optional<List<String>> allWords ;
-        //boolean allWordss =(allWords).isPresent();
-        Optional<List<String>> allWordsGet;
+
         while (!stopFlag.isSet()&&(allWords=extractAgent.getWords()).isPresent()) {
-
-            // log("waiting to count word");
+            Random gen = new Random(System.nanoTime());
             List<String> ListOfWord = allWords.get();
-            //log("---new words: " + ListOfWord.size());
-
+            try {
+                waitFor(gen.nextInt(1));
+                log("ready to count words ");
+                barrier.hitAndWaitAll();
                 for (String w : ListOfWord) {
                     initialWordCounter.computeWord(w);
-                      // stopped =true;
-                    //wordToBeupdate.putAll();
                 }
                 numWords += ListOfWord.size();
 
-            log("-counting   : " + ListOfWord.size() + " new words" +"From "+numWords) ;
-            log("waiting to solve update");
+                log("-counting   : " + ListOfWord.size() + " new words" +"From "+numWords) ;
 
-
-
-
-            synchronized (this){
-                //initialWordCounter.All(initialWordCounter);
-               // allWords = extractAgent.getWords();
-                initialWordCounter.update(ListOfWord.size(), initialWordCounter);
-                initialWordCounter.finalUpdater();
-
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
+            log("waiting to update counting");
+            try {
+                barrier.hitAndWaitAll();
+                synchronized (this){
+                    initialWordCounter.update(ListOfWord.size(), initialWordCounter);
+                    initialWordCounter.finalUpdater();
 
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }log("updated complete");
 
-            /* if (allWords.isPresent()){
-                initialWordCounter.All(initialWordCounter);
-                allWords = extractAgent.getWords();
-            }*/
-
-            //log("work finish");
-            synch.notifyCompletion();
-            log("completed");
-            //master.threadCompleted(numWords, initialWordCounter);
         }
+        synch.notifyCompletion();
+        log("completed");
 
     }
     private void log(String msg) {
         System.out.println("[WORD COUNTER " + Thread.currentThread().getName() +"] " + msg);
-       /*
-       *  synchronized(System.out) {
-            System.out.println("[ "+getName()+" ] "+msg);
-        }*/
     }
     private void waitFor(long ms) throws InterruptedException{
         Thread.sleep(ms);

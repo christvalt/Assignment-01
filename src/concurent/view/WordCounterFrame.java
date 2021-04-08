@@ -9,6 +9,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 
@@ -36,8 +37,9 @@ public class WordCounterFrame extends JFrame implements ActionListener{
 	private View view;
 
 	// Constructor to setup the GUI components
-	public WordCounterFrame(Controller controller, CounterView view) {
+	public WordCounterFrame(int w, int h, Controller controller, CounterView view) {
 		super("Word Occurrences Counter");
+		setSize(w,h);
 
 		listeners = new ArrayList<InputListener>();
 
@@ -82,22 +84,17 @@ public class WordCounterFrame extends JFrame implements ActionListener{
 		add(maxOccurrenceLabel);
 
 
-		frequentWordPanel = new FrequentwordPanel(57,57);
-		frequentWordPanel.setSize(57,57);
-		
 		startbutton = new JButton("Start");
-		//startbutton.addActionListener(this);
 		stopbutton = new JButton("Stop");
-		//stopbutton.addActionListener(this);
 		JPanel panel = new JPanel();
 		panel.add(startbutton);
 		panel.add(stopbutton);
 		panel.setBounds(150,180,140, 40);
 		getContentPane().add(panel);
 
-		/*setPanel = new FrequentWordPanel(w,h);
-		setPanel.setSize(w,h);*/
-	
+		frequentWordPanel = new FrequentwordPanel(w,h);
+		frequentWordPanel.setSize(w,h);
+
 	    setLayout(null); 
 		setVisible(true);
 
@@ -114,6 +111,10 @@ public class WordCounterFrame extends JFrame implements ActionListener{
 			stopbutton.setEnabled(false);
 			controller.stopped(view);
 		});
+
+
+
+
 		addWindowListener(new WindowAdapter(){
 			public void windowClosing(WindowEvent ev){
 				System.exit(-1);
@@ -124,14 +125,11 @@ public class WordCounterFrame extends JFrame implements ActionListener{
 		});
 	
 	}
-	public void showUp() {
+
+	public void display(InitialWordCounter initialWordCounter, Semaphore done){
 		SwingUtilities.invokeLater(() -> {
-			setVisible(true);
-		});
-	}
-	public void display(InitialWordCounter initialWordCounter, Lock lock){
-		SwingUtilities.invokeLater(() -> {
-			frequentWordPanel.display(initialWordCounter, lock);
+			frequentWordPanel.display(initialWordCounter, done);
+			//System.out.println("**************************************************************************");
 		});
 
 
@@ -165,25 +163,19 @@ public class WordCounterFrame extends JFrame implements ActionListener{
 	}
 
 
-
-
-
-
-
 	public class FrequentwordPanel extends JFrame{
 
 		private CounterAgent counterAgent;
-		private Lock lock;
+		private Semaphore done;
 		private InitialWordCounter initialWordCounter;
 
 		public FrequentwordPanel(int w, int h) {
 
-			setTitle("Word Occurences Counter");
-			setSize(800, 650);
+			setTitle("Word frenquence Count");
+			//setSize(900, 650);
 
 			setResizable(false);
 			JPanel panel = new JPanel();
-			// panel.setSize(650,650);
 			getContentPane().add(panel);
 			addWindowListener(new WindowAdapter(){
 				public void windowClosing(WindowEvent ev){
@@ -197,9 +189,10 @@ public class WordCounterFrame extends JFrame implements ActionListener{
 			setVisible(true);
 
 		}
-		public void display(InitialWordCounter initialWordCounter, Lock lock) {
+		public void display(InitialWordCounter initialWordCounter, Semaphore done) {
+			System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 			try{this.initialWordCounter = initialWordCounter;
-				this.lock = lock;
+				this.done = done;
 				AtomicInteger countWords = new AtomicInteger();
 				//lbl.setText(lbl.getText() + InitialWordCounter() + " words analysed <br/>");
 				InitialWordCounter.getSortedWordCount().forEach((s, i) -> {
@@ -210,9 +203,14 @@ public class WordCounterFrame extends JFrame implements ActionListener{
 					countWords.getAndIncrement();
 				});}catch (Exception ex){
 				ex.printStackTrace();
+
+
 			}
+			this.setVisible(true);
 
-
+		}
+		public void updater(String count){
+			lbl.setText(count);
 		}
 
 
