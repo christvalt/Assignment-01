@@ -61,9 +61,7 @@ public class Statistics {
 
 	public void dump() {
 		System.out.println("Time elapsed: " + (endTime - startTime) + " ms - "  + "  completed.");
-		System.out.println("compute words time: " + computeduration + " ms - average: " + ((double) computeduration)/iter + " ");
-		System.out.println("Collision manag time: " + countwordDuration + " ms - average: " + ((double) countwordDuration)/iter + "");
-		System.out.println("Display         time: " + displayDuration + " ms - average: " + ((double)displayDuration)/iter + " ");
+
 		
 	}
 }

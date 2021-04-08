@@ -1,5 +1,6 @@
 package concurent.Model;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -7,24 +8,20 @@ public class ExtractAgent {
 
     private  final List<ExtractText> extractText;
     private int startIndex =0 ;
-   // private final int pagesEachSection;
+    private final int numPages;
 
-    public ExtractAgent(List<ExtractText> extractText) {
+
+    public ExtractAgent(List<ExtractText> extractText, int numPages) {
         this.extractText = extractText;
-       /// this.pagesEachSection = pagesEachSection;
 
-    }
-    public int size(){
-        return this.extractText.size();
+        this.numPages = numPages;
     }
 
-
-    public  Optional<List<String>> getWords(){
+    public  Optional<List<String>> getWords() throws IOException {
 
         while (startIndex < extractText.size()) {
-            //System.out.println("test2");
-            Optional<List<String>>  words = extractText.get(startIndex).extractor();
-            //System.out.println("present test"  +words);
+
+            Optional<List<String>>  words = extractText.get(startIndex).extractor(numPages);
             if ( words.isPresent()) {
                 return words;
             } else {

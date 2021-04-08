@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
@@ -39,7 +38,7 @@ public class Master extends Thread{
     private int threadFinal;
     private int threadsStopped;
     private Barrier barrier;
-    //private Barrier barrier;
+    private final int numPages = 100;
 
 
     public Master(final String ignored, final String directoryPath , View view, TaskCompletionLatch synch, int nWorkers, Flag stopFlag) throws IOException {
@@ -52,7 +51,7 @@ public class Master extends Thread{
                 return name.endsWith(".pdf");}
         };
         File[] files = new File (directoryPath).listFiles(this.filter);
-        this.extractAgent = new ExtractAgent(Arrays.stream(files).map(f -> new ExtractText(f, this.wordsToIgnore)).collect(Collectors.toList()));
+        this.extractAgent = new ExtractAgent(Arrays.stream(files).map(f -> new ExtractText(f, this.wordsToIgnore)).collect(Collectors.toList()), +numPages);
         this.counterAgent=counterAgent;
         this.synch=synch;
         this.lock =lock;

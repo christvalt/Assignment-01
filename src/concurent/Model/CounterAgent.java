@@ -2,6 +2,7 @@ package concurent.Model;
 
 import concurent.controller.Flag;
 
+import java.io.IOException;
 import java.util.*;
 
 
@@ -16,6 +17,7 @@ public class CounterAgent extends Thread{
     private Barrier barrier;
 
 
+
     public CounterAgent(final ExtractAgent extractAgent  , Barrier barrier  ,Flag stopFlag, TaskCompletionLatch synch){
         this.extractAgent =extractAgent;
         this.initialWordCounter =new InitialWordCounter();
@@ -27,9 +29,19 @@ public class CounterAgent extends Thread{
 
     public  void run() {
 
-        Optional<List<String>> allWords ;
+        Optional<List<String>> allWords= null;
+        try {
+            allWords = extractAgent.getWords();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        while (!stopFlag.isSet()&&(allWords=extractAgent.getWords()).isPresent()) {
+        while (true) {
+            try {
+                if (!(!stopFlag.isSet()&&(allWords=extractAgent.getWords()).isPresent())) break;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             Random gen = new Random(System.nanoTime());
             List<String> ListOfWord = allWords.get();
             try {
@@ -56,7 +68,7 @@ public class CounterAgent extends Thread{
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
-            }log("updated complete");
+            }log("updated count  complete");
 
         }
         synch.notifyCompletion();
